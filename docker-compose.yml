@@ -17,8 +17,6 @@ services:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
     ports:
       - "172.17.0.1:19735:3306"
-    networks:
-      - crater
 
   pma:
     image: elestio/phpmyadmin:latest
@@ -45,8 +43,6 @@ services:
       - 172.17.0.1:58821:80
     volumes:
       - ./nginx:/etc/nginx/conf.d/
-    networks:
-      - crater
 
   cron:
     image: elestio4test/crater-cron:latest
