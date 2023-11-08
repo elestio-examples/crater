@@ -67,7 +67,7 @@ services:
     image: elestio4test/crater-cron:latest
     restart: always
     volumes:
-      - ./crater:/var/www/
+      - crater-volume:/var/www/
 
 volumes:
   crater-volume:
