@@ -58,7 +58,6 @@ services:
     volumes:
       - crater-volume:/var/www/
       - ./nginx:/etc/nginx/conf.d/
-      - ./.env:/var/www/.env
     depends_on:
       - db
       - app
@@ -69,7 +68,6 @@ services:
     restart: always
     volumes:
       - ./crater:/var/www/
-      - ./.env:/var/www/.env
 
 volumes:
   crater-volume:
