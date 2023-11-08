@@ -5,7 +5,8 @@ services:
     image: elestio4test/crater:latest
     restart: always
     volumes:
-      - ./env:/var/www/.env
+      - ./.env:/var/www/.env
+      - crater-volume:/var/www/
 
   db:
     image: elestio/mariadb:11.2
@@ -55,3 +56,11 @@ services:
   cron:
     image: elestio4test/crater-cron:latest
     restart: always
+
+volumes:
+  crater-volume:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${PWD}/crater
+      o: bind
