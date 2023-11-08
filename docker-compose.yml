@@ -4,6 +4,8 @@ services:
   app:
     image: elestio4test/crater:latest
     restart: always
+    volumes:
+      - ./env:/var/www/.env
 
   db:
     image: elestio/mariadb:11.2
@@ -17,6 +19,12 @@ services:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
     ports:
       - "172.17.0.1:19735:3306"
+
+  redis:
+    image: elestio/redis:7.0
+    volumes:
+      - ./storage/redis:/data
+    command: --requirepass ${REDIS_PASSWORD}
 
   pma:
     image: elestio/phpmyadmin:latest
