@@ -9,6 +9,8 @@ services:
       - crater-volume:/var/www/
       - ./.env:/var/www/.env
       - ./uploads.ini:/usr/local/etc/php/conf.d/uploads.ini:rw,delegated
+    depends_on:
+      - db
 
   db:
     image: elestio/mariadb:11.2
@@ -57,6 +59,9 @@ services:
       - crater-volume:/var/www/
       - ./nginx:/etc/nginx/conf.d/
       - ./.env:/var/www/.env
+    depends_on:
+      - db
+      - app
 
   cron:
     user: 0:0
