@@ -2,7 +2,7 @@
 set -o allexport; source .env; set +o allexport;
 
 mkdir -p ./crater
-chmod -R 1000:1000 ./crater
+chown -R 1000:1000 ./crater
 
 cat << EOT >> ./.env
 

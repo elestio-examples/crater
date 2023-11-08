@@ -2,11 +2,13 @@ version: "3"
 
 services:
   app:
+    user: 0:0
     image: elestio4test/crater:latest
     restart: always
     volumes:
-      - ./.env:/var/www/.env
       - crater-volume:/var/www/
+      - ./.env:/var/www/.env
+      - ./uploads.ini:/usr/local/etc/php/conf.d/uploads.ini:rw,delegated
 
   db:
     image: elestio/mariadb:11.2
@@ -25,6 +27,7 @@ services:
     image: elestio/redis:7.0
     volumes:
       - ./storage/redis:/data
+
     command: --requirepass ${REDIS_PASSWORD}
 
   pma:
@@ -51,11 +54,17 @@ services:
     ports:
       - 172.17.0.1:58821:80
     volumes:
+      - crater-volume:/var/www/
       - ./nginx:/etc/nginx/conf.d/
+      - ./.env:/var/www/.env
 
   cron:
+    user: 0:0
     image: elestio4test/crater-cron:latest
     restart: always
+    volumes:
+      - ./crater:/var/www/
+      - ./.env:/var/www/.env
 
 volumes:
   crater-volume:
