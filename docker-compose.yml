@@ -1,0 +1,53 @@
+version: "3"
+
+services:
+  app:
+    image: elestio4test/crater:latest
+    restart: always
+
+  db:
+    image: elestio/mariadb:11.2
+    restart: always
+    volumes:
+      - ./db:/var/lib/mysql
+    environment:
+      MYSQL_USER: crater
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: crater
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "172.17.0.1:19735:3306"
+    networks:
+      - crater
+
+  pma:
+    image: elestio/phpmyadmin:latest
+    restart: always
+    links:
+      - db:db
+    ports:
+      - "172.17.0.1:49762:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: libki
+      PMA_PASSWORD: ${ADMIN_PASSWORD}
+      UPLOAD_LIMIT: 500M
+      MYSQL_USERNAME: libki
+      MYSQL_ROOT_PASSWORD: ${ADMIN_PASSWORD}
+    depends_on:
+      - db
+
+  nginx:
+    image: nginx:1.17-alpine
+    restart: always
+    ports:
+      - 172.17.0.1:58821:80
+    volumes:
+      - ./nginx:/etc/nginx/conf.d/
+    networks:
+      - crater
+
+  cron:
+    image: elestio4test/crater-cron:latest
+    restart: always
