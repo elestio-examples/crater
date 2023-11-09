@@ -17,7 +17,7 @@ You can open Crater UI here:
 You can open PHPMyAdmin web UI here:
 
     URL: https://[CI_CD_DOMAIN]:11860
-    email: [ADMIN_EMAIL]
+    email: root
     password: [ADMIN_PASSWORD]
 
 # First use
