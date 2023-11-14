@@ -6,8 +6,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./:/var/www
-      - ./docker-compose/php/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini:rw,delegated
-
+      - ${folderName}/docker-compose/php/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini:rw,delegated
   db:
     image: elestio/mariadb:11.2
     restart: always
@@ -28,4 +27,4 @@ services:
       - 172.17.0.1:58821:80
     volumes:
       - ./:/var/www
-      - ./docker-compose/nginx:/etc/nginx/conf.d/
+      - ${folderName}/docker-compose/nginx:/etc/nginx/conf.d/
