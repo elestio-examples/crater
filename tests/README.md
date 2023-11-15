@@ -51,47 +51,87 @@ You can access the Web UI at: `http://your-domain:58821`
 
 Here are some example snippets to help you get started creating a container.
 
-    version: '3'
+        version: "3"
+        services:
+            crater-app:
+                image: elestio4test/crater:${SOFTWARE_VERSION_TAG}
+                volumes:
+                    - ./my-website:/var/www/html
+                environment:
+                    TZ: UTC
+                    PUID: 1000
+                    PGID: 1000
+                    REDIS_HOST: redis
+                    DB_HOST: db
+                    DB_DATABASE: crater
+                    DB_USERNAME: root
+                    DB_PASSWORD: ${DB_PASSWORD}
+                ports:
+                    - "172.17.0.1:58821:80"
+                links:
+                    - db
+                    - redis
 
-    services:
-        app:
-            image: elestio4test/crater:${SOFTWARE_VERSION_TAG}
-            restart: unless-stopped
-            volumes:
-                - ./:/var/www
-                - ./docker-compose/php/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini:rw,delegated
+            db:
+                image: elestio/mariadb:11.2
+                restart: always
+                volumes:
+                    - ./db:/var/lib/mysql
+                environment:
+                    MYSQL_USER: crater
+                    MYSQL_PASSWORD: ${DB_PASSWORD}
+                    MYSQL_DATABASE: crater
+                    MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+                ports:
+                    - "172.17.0.1:19735:3306"
 
-        db:
-            image: elestio/mariadb:11.2
-            restart: always
-            volumes:
-            - ./db:/var/lib/mysql
-            environment:
-                MYSQL_USER: root
-                MYSQL_PASSWORD: ${ADMIN_PASSWORD}
-                MYSQL_DATABASE: crater
-                MYSQL_ROOT_PASSWORD: ${ADMIN_PASSWORD}
-            ports:
-                - 172.17.0.1:19735:3306'
+            redis:
+                image: elestio/redis:7.0
+                volumes:
+                    - ./storage/redis:/data
 
-        nginx:
-            image: nginx:1.17-alpine
-            restart: unless-stopped
-            ports:
-                - 172.17.0.1:58821:80
-            volumes:
-                - ./:/var/www
-                - ./docker-compose/nginx:/etc/nginx/conf.d/
+                command: --requirepass ${REDIS_PASSWORD}
+
+            pma:
+                image: elestio/phpmyadmin:latest
+                restart: always
+                links:
+                    - db:db
+                ports:
+                    - "172.17.0.1:49762:80"
+                environment:
+                    PMA_HOST: db
+                    PMA_PORT: 3306
+                    PMA_USER: crater
+                    PMA_PASSWORD: ${ADMIN_PASSWORD}
+                    UPLOAD_LIMIT: 500M
+                    MYSQL_USERNAME: crater
+                    MYSQL_ROOT_PASSWORD: ${ADMIN_PASSWORD}
+                depends_on:
+                    - db
 
 ### Environment variables
 
 |       Variable       |  Value (example)   |
 | :------------------: | :----------------: |
 | SOFTWARE_VERSION_TAG |       latest       |
-|  MYSQL_ROOT_PASSWORD |    db-root-pass    |
-|      MYSQL_USER      |      db-user       |
-|    MYSQL_PASSWORD    |      db-pass       |
-|    MYSQL_DATABASE    |      db-name       |
+|  TZ |    time zone    |
+|      PUID      |      user id for crater app       |
+|    PGID    |      group id for crater app |       |
+|    REDIS_HOST    |      redis hostname       |
+|    DB_HOST    |      database hostname       |
+|    DB_DATABASE    |      database name       |
+|    DB_USERNAME    |      database username       |
+|    DB_PASSWORD    |      database password       |
+|    MYSQL_USER    |      database username       |
+|    MYSQL_PASSWORD    |      database password       |
+|    MYSQL_DATABASE    |      database name       |
+|    MYSQL_ROOT_PASSWORD    |      database root password       |
+|    PMA_HOST    |      database hostname       |
+|    PMA_PORT    |      database port      |
+|    PMA_USER    |      database username       |
+|    PMA_PASSWORD    |      database password       |
+|    UPLOAD_LIMIT    |      import file size limit       |
 
 # Maintenance
 
