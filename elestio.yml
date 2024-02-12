@@ -31,7 +31,7 @@ ports:
 
 environments:
   - key: "SOFTWARE_VERSION_TAG"
-    value: "php8.1"
+    value: "php8.1-deprecated"
   - key: "ADMIN_EMAIL"
     value: "[EMAIL]"
   - key: "ADMIN_PASSWORD"
